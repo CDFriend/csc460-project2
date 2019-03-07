@@ -2,4 +2,6 @@
 
 # Build files
 Debug/
-
+*.o
+*.hex
+*.elf
