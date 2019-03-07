@@ -1,13 +1,14 @@
 #include "tta.h"
 #include <avr/interrupt.h>
 #include <math.h>
+#include <stddef.h>
  
 typedef struct
 {
 	int16_t period;
 	int16_t remaining_time;
 	uint8_t is_running;
-	voidfuncptr functionPointer;
+	voidfuncptr callback;
 } task_t;
  
 task_t tasks[MAXTASKS];
@@ -69,9 +70,9 @@ uint32_t Scheduler_Dispatch()
 	if (t != NULL)
 	{
 		// If a task was selected to run, call its function.
-		Disable_Interrupts();
+		Disable_Interrupt();
 		t();
-		Enable_Interrupts();
+		Enable_Interrupt();
 	}
 	return idle_time;
 }
