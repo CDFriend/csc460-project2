@@ -1,3 +1,5 @@
+#include <stdint.h>
+
 #ifndef TTA_H
 #define TTA_H
 
