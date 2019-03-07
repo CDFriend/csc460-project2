@@ -7,7 +7,7 @@ from glob import glob
 
 
 def get_serial_port():
-    serial_ports = glob("/dev/cu.usbserial*")
+    serial_ports = glob("/dev/cu.usb*")
 
     if len(serial_ports) == 0:
         raise Exception("No usb serial ports found")
@@ -23,7 +23,7 @@ def get_serial_port():
         return serial_ports[0]
 
 
-def program_avr(hex_file, port, mmcu, baud=57600, programmer="arduino"):
+def program_avr(hex_file, port, mmcu, baud=115200, programmer="wiring"):
     args = ["avrdude", "-b", str(baud), "-c", programmer, "-p", mmcu,
             "-P", port, "-U", "flash:w:%s" % hex_file] 
     print("> ", " ".join(args))
