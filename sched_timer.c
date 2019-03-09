@@ -19,9 +19,9 @@ void Schedtimer_Init()
     OCR1A = 16000;  // 1 msec = 16000 ticks
     TIMSK1 |= (1 << OCIE1A);  // Enable timer 0 compare interrupt
 
-    // Init timer debug pin (PB0/Digital pin 53)
-    DDRB = 0xFF;
-    PORTB = 0x00;
+    // Init timer debug pin (PA0/Digital pin 22)
+    DDRA |= (1 << PA0);
+    PORTA &= ~(1 << PA0);
 }
 
 int16_t millis()
@@ -31,8 +31,8 @@ int16_t millis()
 
 SIGNAL(TIMER1_COMPA_vect)
 {
-    PORTB = 0xFF;
+    PORTA |= (1 << PA0);
     g_timerTicks++;
-    PORTB = 0x00;
+    PORTA &= ~(1 << PA0);
 }
 
