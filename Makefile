@@ -13,7 +13,9 @@ MMCU=atmega2560
 
 SOURCES = \
 	main.c \
-	tta.c
+	tta.c \
+	sched_timer.c \
+	LED_Test.c
 
 all: $(BUILD)/$(OUT).hex
 
