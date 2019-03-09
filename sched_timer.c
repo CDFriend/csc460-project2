@@ -31,8 +31,10 @@ int16_t millis()
 
 SIGNAL(TIMER1_COMPA_vect)
 {
+    Disable_Interrupt();
     PORTA |= (1 << PA0);
     g_timerTicks++;
     PORTA &= ~(1 << PA0);
+    Enable_Interrupt();
 }
 

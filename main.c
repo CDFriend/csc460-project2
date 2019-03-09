@@ -35,6 +35,32 @@ void test2(){
 	Scheduler_AddSporadicTask(50, Pong, NULL);
 }
 
+/**
+ * Long periodic task (should run for >1ms).
+ */
+void LongPeriodicTask(void* arg)
+{
+    // Pull PB0 high (digital port 53)
+    DDRB |= (1 << PB0);
+    PORTB |= (1 << PB0);
+
+    // Do a bunch of useless work
+    unsigned int x;
+    for (x = 0; x < 32000; x++);
+
+    PORTB &= ~(1 << PB0);
+}
+
+/**
+ * Long periodic tasks (>1ms) should not affect our timer values.
+ */
+void Test3(void)
+{
+	Scheduler_Init();
+	Scheduler_StartPeriodicTask(0, 20, LongPeriodicTask, NULL);
+	Scheduler_Start();
+}
+
 /*
 The main function of the program. Will call a test function,
 which sets up and runs a test.
