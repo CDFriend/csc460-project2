@@ -18,7 +18,7 @@ void Scheduler_StartPeriodicTask(int16_t delay, int16_t period, voidfuncptr task
 uint16_t Scheduler_DispatchPeriodic();
 
 /*
-Changes a task's period.
+Changes a periodic task's period.
 Does not go into effect until the next time it runs.
 task_id is its index in the array of tasks.
 The first task created will have task_id = 0, second task has task_id = 1, etc.
