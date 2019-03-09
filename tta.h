@@ -8,7 +8,7 @@
 #define Disable_Interrupt()		asm volatile ("cli"::)
 #define Enable_Interrupt()		asm volatile ("sei"::)
 
-typedef void (*voidfuncptr) (void* ptr);      /* pointer to void f(void* ptr) */ 
+typedef void (*voidfuncptr) (void* ptr);      /* pointer to void f(void* ptr) */
 
 void Scheduler_Init();
 
