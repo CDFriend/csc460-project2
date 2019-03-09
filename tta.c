@@ -52,7 +52,6 @@ void Scheduler_StartPeriodicTask(int16_t delay, int16_t period, voidfuncptr task
 }
 
 uint16_t Scheduler_DispatchPeriodic(){
-	Disable_Interrupt();
 	
 	uint16_t now = millis();
 	uint16_t elapsed = now - last_runtime_periodic;
@@ -71,6 +70,7 @@ uint16_t Scheduler_DispatchPeriodic(){
 					// if this task is ready to run, and we haven't already selected a task to run,
 					// select this one.
 					t = periodic_tasks[i].function_pointer;
+					t_state_struct_ptr = periodic_tasks[i].state_struct_ptr;
 					periodic_tasks[i].remaining_time += periodic_tasks[i].period;
 				}
 				idle_time = 0;
@@ -81,10 +81,11 @@ uint16_t Scheduler_DispatchPeriodic(){
 		}
 	}
 	if (t != NULL){
+		Disable_Interrupt();
 		// If a task was selected to run, call its function.
 		t(t_state_struct_ptr);
+		Enable_Interrupt();
 	}
-	Enable_Interrupt();
 	return idle_time;
 }
 
@@ -113,17 +114,26 @@ void Scheduler_DispatchSporadic(){
 	voidfuncptr t = NULL;
 	void* t_state_struct_ptr = NULL;
 	
-	// update each task's remaining time, and identify the first ready task (if there is one).
+	// update each task's remaining time before running, and identify the first ready task (if there is one).
 	for (uint8_t i = 0; i < MAXTASKS; i++){
+		
+		// If the task exists
 		if (sporadic_tasks[i].ready_to_run){
+			
 			// update the task's remaining time
 			sporadic_tasks[i].delay -= elapsed;
+			
+			// Set the sporadic task to run if it's ready
 			if (sporadic_tasks[i].delay <= 0){
 				t = sporadic_tasks[i].function_pointer;
+				t_state_struct_ptr = sporadic_tasks[i].state_struct_ptr;
+				
+				// Indicate that this task cannot be run again
 				sporadic_tasks[i].ready_to_run = 0;
 			}
 		}
 	}
+	
 	if (t != NULL){
 		// If a task was selected to run, call its function.
 		Disable_Interrupt();
@@ -137,7 +147,7 @@ void Scheduler_Start(){
 		uint16_t idle_time = Scheduler_DispatchPeriodic();
 		if(idle_time){
 			Scheduler_DispatchSporadic();
-		}
+	}
 }
 
 // Interrupt vector which can only run when no periodic tasks are running.
