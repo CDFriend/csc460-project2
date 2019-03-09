@@ -91,13 +91,11 @@ uint16_t Scheduler_DispatchPeriodic(){
 	return idle_time;
 }
 
-#if 0
 void Set_Task_Period(uint8_t task_id, int16_t new_period){
-	if (periodic_tasks[task_id] != NULL){
+	if (periodic_tasks[task_id].is_running){
 		periodic_tasks[task_id].period = new_period;
 	}
 }
-#endif
 
 void Scheduler_AddSporadicTask(int16_t delay, voidfuncptr task, void* state_struct_ptr){
 	for (uint8_t i = 0; i < MAXTASKS; i++) {
@@ -107,11 +105,13 @@ void Scheduler_AddSporadicTask(int16_t delay, voidfuncptr task, void* state_stru
 			sporadic_tasks[i].function_pointer = task;
 			sporadic_tasks[i].state_struct_ptr = state_struct_ptr;
 			sporadic_tasks[i].ready_to_run = 1;
+			break;
 		}
 	}
 }
 
 void Scheduler_DispatchSporadic(){
+	
 	uint16_t now = millis();
 	uint16_t elapsed = now - last_runtime_sporadic;
 	last_runtime_sporadic = now;
@@ -127,8 +127,8 @@ void Scheduler_DispatchSporadic(){
 			// update the task's remaining time
 			sporadic_tasks[i].delay -= elapsed;
 			
-			// Set the sporadic task to run if it's ready
-			if (sporadic_tasks[i].delay <= 0){
+			// Set the sporadic task to run if it's ready and we haven't selected another task
+			if (sporadic_tasks[i].delay <= 0 && t == NULL){
 				t = sporadic_tasks[i].function_pointer;
 				t_state_struct_ptr = sporadic_tasks[i].state_struct_ptr;
 				
@@ -147,6 +147,8 @@ void Scheduler_DispatchSporadic(){
 }
 
 void Scheduler_Start(){
+	Enable_Interrupt();
+
 	while(1){
 		
 		uint16_t idle_time = Scheduler_DispatchPeriodic();
