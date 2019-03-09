@@ -5,6 +5,7 @@
 #include <math.h>
 #include "tta.h"
 #include "LED_Test.h"
+#include "sched_timer.h"
 
 typedef struct {
 	int16_t period;
@@ -34,6 +35,7 @@ sporadic_task_t sporadic_tasks[MAXTASKS];
 uint16_t last_runtime_sporadic;
 
 void Scheduler_Init(){
+	Schedtimer_Init();
 	last_runtime_periodic = millis();
 	last_runtime_sporadic = millis();
 }
@@ -89,11 +91,13 @@ uint16_t Scheduler_DispatchPeriodic(){
 	return idle_time;
 }
 
+#if 0
 void Set_Task_Period(uint8_t task_id, int16_t new_period){
-	if (periodic_tasks[task_id].is_running) {
+	if (periodic_tasks[task_id] != NULL){
 		periodic_tasks[task_id].period = new_period;
 	}
 }
+#endif
 
 void Scheduler_AddSporadicTask(int16_t delay, voidfuncptr task, void* state_struct_ptr){
 	for (uint8_t i = 0; i < MAXTASKS; i++) {
@@ -150,18 +154,4 @@ void Scheduler_Start(){
 			Scheduler_DispatchSporadic();
 		}
 	}
-}
-
-// Interrupt vector which can only run when no periodic tasks are running.
-SIGNAL(TIMER1_COMPB_vect) {
-	Disable_Interrupt();
-	
-	init_LED_B2();
-	enable_LED(LED_B2_GREEN);
-	
-	for(unsigned int x = 0; x < 1000; x++);
-	
-	disable_LEDs();
-	
-	Enable_Interrupt();
 }
