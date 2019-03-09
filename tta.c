@@ -90,7 +90,7 @@ uint16_t Scheduler_DispatchPeriodic(){
 }
 
 void Set_Task_Period(uint8_t task_id, int16_t new_period){
-	if periodic_tasks[task_id] != NULL{
+	if (periodic_tasks[task_id].is_running) {
 		periodic_tasks[task_id].period = new_period;
 	}
 }
@@ -144,9 +144,11 @@ void Scheduler_DispatchSporadic(){
 
 void Scheduler_Start(){
 	while(1){
+		
 		uint16_t idle_time = Scheduler_DispatchPeriodic();
 		if(idle_time){
 			Scheduler_DispatchSporadic();
+		}
 	}
 }
 
@@ -154,8 +156,8 @@ void Scheduler_Start(){
 SIGNAL(TIMER1_COMPB_vect) {
 	Disable_Interrupt();
 	
-	init_LED_D2();
-	enable_LED(LED_D2);
+	init_LED_B2();
+	enable_LED(LED_B2_GREEN);
 	
 	for(unsigned int x = 0; x < 1000; x++);
 	
