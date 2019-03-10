@@ -13,6 +13,9 @@
 static volatile int16_t g_timerMs = 0;  // milliseconds
 static volatile int16_t g_timerMsFractional = 0;  // thousandths of a millisecond
 
+/**
+ * Initializes the scheduler timer.
+ */
 void Schedtimer_Init() 
 {
     TCCR1B |= ((1<<CS12)|(1<<CS10));  // Prescale: (clock / 1024)
@@ -25,6 +28,9 @@ void Schedtimer_Init()
     PORTA &= ~(1 << PA0);
 }
 
+/**
+ * @return The number of milliseconds since Schedtimer_init() was called.
+ */
 int16_t millis()
 {
     return g_timerMs;

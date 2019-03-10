@@ -1,3 +1,9 @@
+/**
+ * main.c
+ * 
+ * Test routines for the TTA scheduler on the ATMega2560 microcontroller.
+ */
+
 #include <string.h>
 #include "tta.h"
 #include "LED_Test.h"
