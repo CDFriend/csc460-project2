@@ -28,6 +28,7 @@ uint16_t last_runtime_periodic;
 
 typedef struct {
 	int16_t delay;
+	uint16_t execution_time;
 	uint8_t ready_to_run;
 	voidfuncptr function_pointer;
 	void* state_struct_ptr;
@@ -58,7 +59,7 @@ void Scheduler_Init(){
  * @param state_struct_ptr: Pointer to any persistent data. Will be passed as an argument
  * 							on all calls to task.
  */
-void Scheduler_StartPeriodicTask(int16_t delay, int16_t period, voidfuncptr task, void* state_struct_ptr){
+void Scheduler_StartPeriodicTask(int16_t delay, uint16_t period, voidfuncptr task, void* state_struct_ptr){
 	
 	static uint8_t id = 0;
 	if (id < MAXTASKS){
@@ -127,15 +128,17 @@ void Set_Task_Period(uint8_t task_id, int16_t new_period){
  * Adds a sporadic task to the scheduler, which will be run once after a given 
  * delay.
  * @param delay: Time before task is run in milliseconds.
+ * @param execution_time: Estimated time to execute the task.
  * @param task: Task callback pointer.
  * @param state_struct_ptr: Pointer to a persistent state for the task. Will be passed
  * 							as an argument on every call.
  */
-void Scheduler_AddSporadicTask(int16_t delay, voidfuncptr task, void* state_struct_ptr){
+void Scheduler_AddSporadicTask(int16_t delay, uint16_t execution_time, voidfuncptr task, void* state_struct_ptr){
 	for (uint8_t i = 0; i < MAXTASKS; i++) {
 		// If we found an empty space for a task
 		if (!sporadic_tasks[i].ready_to_run){
 			sporadic_tasks[i].delay = delay;
+			sporadic_tasks[i].execution_time = execution_time;
 			sporadic_tasks[i].function_pointer = task;
 			sporadic_tasks[i].state_struct_ptr = state_struct_ptr;
 			sporadic_tasks[i].ready_to_run = 1;
@@ -147,7 +150,7 @@ void Scheduler_AddSporadicTask(int16_t delay, voidfuncptr task, void* state_stru
 /**
  * Dispatches the next scheduled sporadic task. Called from scheduler main loop.
  */
-void Scheduler_DispatchSporadic(){
+void Scheduler_DispatchSporadic(uint16_t idle_time){
 	
 	uint16_t now = millis();
 	uint16_t elapsed = now - last_runtime_sporadic;
@@ -165,7 +168,7 @@ void Scheduler_DispatchSporadic(){
 			sporadic_tasks[i].delay -= elapsed;
 			
 			// Set the sporadic task to run if it's ready and we haven't selected another task
-			if (sporadic_tasks[i].delay <= 0 && t == NULL){
+			if (sporadic_tasks[i].delay <= 0 && idle_time <= sporadic_tasks[i].execution_time && t == NULL){
 				t = sporadic_tasks[i].function_pointer;
 				t_state_struct_ptr = sporadic_tasks[i].state_struct_ptr;
 				
@@ -193,7 +196,7 @@ void Scheduler_Start(){
 		
 		uint16_t idle_time = Scheduler_DispatchPeriodic();
 		if(idle_time){
-			Scheduler_DispatchSporadic();
+			Scheduler_DispatchSporadic(idle_time);
 		}
 	}
 }
