@@ -25,7 +25,7 @@ void Scheduler_Init();
  * @param state_struct_ptr: Pointer to any persistent data. Will be passed as an argument
  * 							on all calls to task.
  */
-void Scheduler_StartPeriodicTask(int16_t delay, int16_t period, voidfuncptr task, void* state_struct_ptr);
+void Scheduler_StartPeriodicTask(int16_t delay, uint16_t period, voidfuncptr task, void* state_struct_ptr);
 
 /**
  * Dispatches the next scheduled periodic task. Called from scheduler main loop.
@@ -43,11 +43,12 @@ void Set_Task_Period(uint8_t task_id, int16_t new_period);
  * Adds a sporadic task to the scheduler, which will be run once after a given 
  * delay.
  * @param delay: Time before task is run in milliseconds.
+ * @param execution_time: Estimated time to execute the task.
  * @param task: Task callback pointer.
  * @param state_struct_ptr: Pointer to a persistent state for the task. Will be passed
  * 							as an argument on every call.
  */
-void Scheduler_AddSporadicTask(int16_t delay, voidfuncptr task, void* state_struct_ptr);
+void Scheduler_AddSporadicTask(int16_t delay, uint16_t execution_time, voidfuncptr task, void* state_struct_ptr);
 
 /**
  * Dispatches the next scheduled sporadic task. Called from scheduler main loop.
