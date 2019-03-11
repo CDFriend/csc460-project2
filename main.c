@@ -39,8 +39,8 @@ void test2(){
 	Scheduler_Init();
 	
 	Scheduler_StartPeriodicTask(0, 10, Ping, NULL);
-	Scheduler_AddSporadicTask(25, Pong, NULL);
-	Scheduler_AddSporadicTask(10, Pong, NULL);
+	Scheduler_AddSporadicTask(25, 2, Pong, NULL);
+	Scheduler_AddSporadicTask(10, 2, Pong, NULL);
 	
 	Scheduler_Start();
 }
@@ -53,6 +53,8 @@ void LongPeriodicTask(void* arg){
 	enable_LED(LED_B5_GREEN);
 	for (unsigned int x = 0; x < 32000; x++);
 	disable_LEDs();
+
+    PORTB &= ~(1 << PB0);
 }
 
 /**
@@ -113,7 +115,7 @@ void test5(){
 	
 	int blink_count[] = {1,3};
 	void* count_ptr = &blink_count;
-	Scheduler_AddSporadicTask(100,blink_for_count,count_ptr);
+	Scheduler_AddSporadicTask(100, 50, blink_for_count,count_ptr);
 		
 	Scheduler_Start();
 }
@@ -150,5 +152,5 @@ The main function of the program. Will call a test function,
 which sets up and runs a test.
 */
 int main() {
-	test1();
+	test6();
 }
