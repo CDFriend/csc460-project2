@@ -10,7 +10,7 @@
 #define Disable_Interrupt()		asm volatile ("cli"::)
 #define Enable_Interrupt()		asm volatile ("sei"::)
 
-static volatile int16_t g_timerMs = 0;  // milliseconds
+static volatile int32_t g_timerMs = 0;  // milliseconds
 static volatile int16_t g_timerMsFractional = 0;  // thousandths of a millisecond
 
 /**
