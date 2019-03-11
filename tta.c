@@ -168,7 +168,7 @@ void Scheduler_DispatchSporadic(uint16_t idle_time){
 			sporadic_tasks[i].delay -= elapsed;
 			
 			// Set the sporadic task to run if it's ready and we haven't selected another task
-			if (sporadic_tasks[i].delay <= 0 && idle_time <= sporadic_tasks[i].execution_time && t == NULL){
+			if (sporadic_tasks[i].delay <= 0 && idle_time >= sporadic_tasks[i].execution_time && t == NULL){
 				t = sporadic_tasks[i].function_pointer;
 				t_state_struct_ptr = sporadic_tasks[i].state_struct_ptr;
 				
