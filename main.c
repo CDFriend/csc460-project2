@@ -48,15 +48,11 @@ void test2(){
 /**
  * Long periodic task (should run for >1ms).
  */
-void LongPeriodicTask(void* arg)
-{
-    // Pull PB0 high (digital port 53)
-    DDRB |= (1 << PB0);
-    PORTB |= (1 << PB0);
-
-    // Do a bunch of useless work
-    unsigned int x;
-    for (x = 0; x < 32000; x++);
+void LongPeriodicTask(void* arg){
+	init_LED_B5();
+	enable_LED(LED_B5_GREEN);
+	for (unsigned int x = 0; x < 32000; x++);
+	disable_LEDs();
 
     PORTB &= ~(1 << PB0);
 }
