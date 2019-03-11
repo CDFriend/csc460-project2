@@ -53,8 +53,6 @@ void LongPeriodicTask(void* arg){
 	enable_LED(LED_B5_GREEN);
 	for (unsigned int x = 0; x < 32000; x++);
 	disable_LEDs();
-
-    PORTB &= ~(1 << PB0);
 }
 
 /**
@@ -63,7 +61,7 @@ void LongPeriodicTask(void* arg){
 void Test3(void){
 	Scheduler_Init();
 	
-	Scheduler_StartPeriodicTask(0, 20, LongPeriodicTask, NULL);
+	Scheduler_StartPeriodicTask(0, 60, LongPeriodicTask, NULL);
 	
 	Scheduler_Start();
 }
@@ -152,5 +150,5 @@ The main function of the program. Will call a test function,
 which sets up and runs a test.
 */
 int main() {
-	test6();
+	test1();
 }
