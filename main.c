@@ -147,6 +147,15 @@ void test6(){
 	Scheduler_Start();
 }
 
+void test7(){
+	Scheduler_Init();
+	
+	Scheduler_StartPeriodicTask(0, 60, LongPeriodicTask, NULL);
+	Scheduler_AddSporadicTask(0, 50, Pong, NULL);
+	
+	Scheduler_Start();
+}
+
 /*
 The main function of the program. Will call a test function,
 which sets up and runs a test.
